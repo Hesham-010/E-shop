@@ -5,6 +5,7 @@ const factory = require("./handlersFactory");
 const ApiError = require("../utils/apiError");
 const Order = require("../models/orderModel");
 const Cart = require("../models/cartModel");
+const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const { updateOne } = require("../models/userModel");
 
@@ -144,6 +145,45 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
   res.status(200).json({ status: "success", session });
 });
 
+const creteCardOrder = asyncHandler(async (session) => {
+  const cartId = session.client_reference_id;
+  const shippingAddress = session.metadata;
+  const orderPrice = session.amount_total;
+
+  const cart = await Cart.findById(cartId);
+  const user = await User.findOne({ email: session.customer_email });
+
+  // Create Cart
+  const order = await Order.create({
+    user: user._id,
+    cartItems: cart.cartItems,
+    shippingAddress: shippingAddress,
+    totalOrderPrice: orderPrice,
+    isPaid: true,
+    paidAt: Date.now(),
+    paymentMethodType: "card",
+  });
+  // after create order must be update product quantity and sold
+  if (order) {
+    bulkOption = cart.cartItems.map((item) => ({
+      updateOne: {
+        filter: {
+          _id: item.product,
+        },
+        update: {
+          $inc: {
+            quantity: -item.quantity,
+            sold: +item.quantity,
+          },
+        },
+      },
+    }));
+    await Product.bulkWrite(bulkOption, {});
+    // 5- clear cart based on cartId
+    await Cart.findByIdAndDelete(cartId);
+  }
+});
+
 exports.webhookCheckout = asyncHandler(async (req, res, next) => {
   const sig = req.headers["stripe-signature"];
 
@@ -158,10 +198,9 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
   } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
-  console.log("Faild");
   if (event.type === "checkout.session.completed") {
-    console.log("Create Order here.....");
-  } else {
-    console.log("s");
+    // Create order
+    creteCardOrder(event.data.object);
   }
+  res.status(200).json({ status: "Success" });
 });
