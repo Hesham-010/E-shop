@@ -132,15 +132,6 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
         quantity: 1,
       },
     ],
-    // line_items: [
-    //   {
-    //     // name: req.user.name,
-    //     price: totalOrderPrice,
-    //     // currency: "egp",
-    //     quantity: 1,
-    //   },
-    // ],
-
     mode: "payment",
     success_url: `${req.protocol}://${req.get("host")}/orders`,
     cancel_url: `${req.protocol}://${req.get("host")}/cart`,
@@ -167,7 +158,7 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
   } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
-  if (event.type = checkout.session.completed) {
-    console.log("Create Order here");
+  if ((event.type = checkout.session.completed)) {
+    console.log("Create Order here.....");
   }
 });
