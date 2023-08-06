@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "config.env" });
 const morgan = require("morgan");
 const compression = require("compression");
+const rateLimit = require("express-rate-limit");
 
 const { webhookCheckout } = require("./services/orderService");
 const dbConnection = require("./config/database");
@@ -17,9 +18,11 @@ dbConnection();
 
 // express app
 const app = express();
+
 // enable other domains to access your application
 app.use(cors());
 app.options("*", cors());
+
 // compress All responses
 app.use(compression());
 
@@ -31,8 +34,17 @@ app.post(
 );
 
 //middlwares
-app.use(express.json());
+app.use(express.json({ limit: "10kb" }));
 app.use(express.static(path.join(__dirname, "uploads")));
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  message:
+    "Too many requests from this IP, please try again after an 15 minutes",
+});
+// Apply the rate limiting middleware to all requests
+app.use("/api", limiter);
 
 //Mount Routes
 routes(app);
