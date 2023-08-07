@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const sanitiseUser = require("../utils/sanitiseUser");
 const createToken = require("../utils/createToken");
 const sendEmail = require("../utils/sendEmail");
 const ApiError = require("../utils/apiError");
@@ -22,7 +23,7 @@ exports.signup = asyncHandler(async (req, res, next) => {
   //2- generate token
   const token = createToken(user._id);
 
-  res.status(201).json({ data: user, token });
+  res.status(201).json({ data: sanitiseUser(user), token });
 });
 
 //@desc      Login
@@ -36,7 +37,7 @@ exports.login = asyncHandler(async (req, res, next) => {
   }
   const token = createToken(user._id);
 
-  res.status(200).json({ data: user, token });
+  res.status(200).json({ data: sanitiseUser(user), token });
 });
 
 exports.protect = asyncHandler(async (req, res, next) => {
