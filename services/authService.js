@@ -3,7 +3,7 @@ const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const sanitiseUser = require("../utils/sanitiseUser");
+const { sanitiseUser } = require("../utils/sanitiseUser");
 const createToken = require("../utils/createToken");
 const sendEmail = require("../utils/sendEmail");
 const ApiError = require("../utils/apiError");
