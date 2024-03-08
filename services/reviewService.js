@@ -15,26 +15,26 @@ exports.createFilterObj = (req, res, next) => {
   next();
 };
 // @desc    Get list of reviews
-// @route   GET /api/v1/reviews
+// @route   GET /api/reviews
 // @access  Public
 exports.getReviews = factory.getAll(Review);
 
 // @desc    Get specific review by id
-// @route   GET /api/v1/reviews/:id
+// @route   GET /api/reviews/:id
 // @access  Public
 exports.getReview = factory.getOne(Review);
 
 // @desc    Create review
-// @route   POST  /api/v1/reviews
+// @route   POST  /api/reviews
 // @access  Private/protect/user
 exports.createReview = factory.createOne(Review);
 
 // @desc    Update specific review
-// @route   PUT /api/v1/reviews/:id
+// @route   PUT /api/reviews/:id
 // @access  Private/protect/user
 exports.updateReview = factory.updateOne(Review);
 
 // @desc    Delete specific review
-// @route   DELETE /api/v1/reviews/:id
+// @route   DELETE /api/reviews/:id
 // @access  Private/protect/user-admin
 exports.deleteReview = factory.deleteOne(Review);

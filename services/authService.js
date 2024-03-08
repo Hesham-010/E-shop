@@ -1,8 +1,6 @@
 const crypto = require("crypto");
-const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
 const { sanitiseUser } = require("../utils/sanitiseUser");
 const createToken = require("../utils/createToken");
 const sendEmail = require("../utils/sendEmail");
@@ -10,9 +8,9 @@ const ApiError = require("../utils/apiError");
 const User = require("../models/userModel");
 
 //@desc      Signup
-//@route     post   /api/v1/auth/signup
+//@route     post   /api/auth/signup
 //@access    public
-exports.signup = asyncHandler(async (req, res, next) => {
+exports.signup = async (req, res, next) => {
   //1- Create user
   const user = await User.create({
     name: req.body.name,
@@ -24,12 +22,12 @@ exports.signup = asyncHandler(async (req, res, next) => {
   const token = createToken(user._id);
 
   res.status(201).json({ data: sanitiseUser(user), token });
-});
+};
 
 //@desc      Login
-//@route     post   /api/v1/auth/login
+//@route     post   /api/auth/login
 //@access    public
-exports.login = asyncHandler(async (req, res, next) => {
+exports.login = async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
 
   if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
@@ -38,9 +36,9 @@ exports.login = asyncHandler(async (req, res, next) => {
   const token = createToken(user._id);
 
   res.status(200).json({ data: sanitiseUser(user), token });
-});
+};
 
-exports.protect = asyncHandler(async (req, res, next) => {
+exports.protect = async (req, res, next) => {
   // 1- check if token exist
   let token;
   if (req.headers.authorization) {
@@ -88,21 +86,22 @@ exports.protect = asyncHandler(async (req, res, next) => {
   }
   req.user = currentUser;
   next();
-});
+};
 
 //@desc      Authorization
-exports.allowedTO = (...roles) =>
-  asyncHandler(async (req, res, next) => {
+exports.allowedTO =
+  (...roles) =>
+  async (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return next(new ApiError("You are not allow to access this route", 403));
     }
     next();
-  });
+  };
 
 //@desc      forgot password
-//@route     POST   /api/v1/auth/forgotPassword
+//@route     POST   /api/auth/forgotPassword
 //@access    public
-exports.forgotPassword = asyncHandler(async (req, res, next) => {
+exports.forgotPassword = async (req, res, next) => {
   // 1- get user by email
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
@@ -142,12 +141,12 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   res
     .status(200)
     .json({ status: "Success", message: "Reset code send to email" });
-});
+};
 
 //@desc      Verify Password Reset Code
-//@route     POST   /api/v1/auth/verifyResetCode
+//@route     POST   /api/auth/verifyResetCode
 //@access    public
-exports.verifyPasswordResetCode = asyncHandler(async (req, res, next) => {
+exports.verifyPasswordResetCode = async (req, res, next) => {
   // 1- Get user based on reset code
   const hashedResetCode = crypto
     .createHash("sha256")
@@ -166,12 +165,12 @@ exports.verifyPasswordResetCode = asyncHandler(async (req, res, next) => {
   user.passwordResetVerified = true;
   await user.save();
   res.status(200).json({ status: "Success" });
-});
+};
 
 //@desc      Reset Password
 //@route     POST   /api/v1/auth/resetPassword
 //@access    public
-exports.resetPassword = asyncHandler(async (req, res, next) => {
+exports.resetPassword = async (req, res, next) => {
   // 1- get user based on email
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
@@ -192,4 +191,4 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 
   const token = createToken(user._id);
   res.status(200).json({ token });
-});
+};

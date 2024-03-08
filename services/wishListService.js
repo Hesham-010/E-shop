@@ -1,9 +1,8 @@
 const asyncHandler = require("express-async-handler");
-
 const User = require("../models/userModel");
 
 // @desc    Add product to wishlist
-// @route   POST  /api/v1/wishList
+// @route   POST  /api/wishList
 // @access  Private/user
 exports.addProductToWishlist = asyncHandler(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
@@ -23,7 +22,7 @@ exports.addProductToWishlist = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Delete product from wishlist
-// @route   delete  /api/v1/wishList/:id
+// @route   delete  /api/wishList/:id
 // @access  Private/user
 exports.deleteProductFromWishlist = asyncHandler(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
@@ -43,7 +42,7 @@ exports.deleteProductFromWishlist = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Get List of products from wishlist
-// @route   Get  /api/v1/wishList
+// @route   Get  /api/wishList
 // @access  Private/user
 exports.getListOfProductsFromWishlist = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id).populate("wishList");

@@ -3,9 +3,9 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 
 // @desc    Add address to user addresses
-// @route   POST  /api/v1/addresses
+// @route   POST  /api/addresses
 // @access  Private/user
-exports.addAddress = asyncHandler(async (req, res, next) => {
+exports.addAddress = async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
@@ -20,12 +20,12 @@ exports.addAddress = asyncHandler(async (req, res, next) => {
     message: "this address added to your address list",
     data: user.addresses,
   });
-});
+};
 
 // @desc    Delete address from user addresses
-// @route   delete  /api/v1/address/:id
+// @route   delete  /api/address/:id
 // @access  Private/user
-exports.deleteAddress = asyncHandler(async (req, res, next) => {
+exports.deleteAddress = async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
@@ -40,16 +40,16 @@ exports.deleteAddress = asyncHandler(async (req, res, next) => {
     message: "this address removed from your address list",
     data: user.addresses,
   });
-});
+};
 
 // @desc    Get List of addresses
-// @route   Get  /api/v1/wishList
+// @route   Get  /api/wishList
 // @access  Private/user
-exports.getListOfAddresses = asyncHandler(async (req, res, next) => {
+exports.getListOfAddresses = async (req, res, next) => {
   const user = await User.findById(req.user._id);
   res.status(200).json({
     status: "Success",
     resulte: user.addresses.length,
     data: user.addresses,
   });
-});
+};

@@ -7,10 +7,9 @@ const Order = require("../models/orderModel");
 const Cart = require("../models/cartModel");
 const User = require("../models/userModel");
 const Product = require("../models/productModel");
-const { updateOne } = require("../models/userModel");
 
 // @desc    Create Cash Order
-// @route   POST /api/v1/orders/cartId
+// @route   POST /api/orders/cartId
 // @access  Private/user
 exports.createCashOrder = asyncHandler(async (req, res, next) => {
   const taxPrice = 0;
@@ -61,17 +60,17 @@ exports.filterOrderForLoggedUser = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Get All Order
-// @route   GET /api/v1/orders
+// @route   GET /api/orders
 // @access  Private/user
 exports.getOrders = factory.getAll(Order);
 
 // @desc    Get Specific Order for Logged user
-// @route   GET /api/v1/orders/orderId
+// @route   GET /api/orders/orderId
 // @access  Private/user
 exports.getSpicificOrder = factory.getOne(Order);
 
 // @desc    Update Order Paid
-// @route   PUT /api/v1/orders/orderId/pay
+// @route   PUT /api/orders/orderId/pay
 // @access  Private/admin
 exports.updateOrderPaid = asyncHandler(async (req, res, next) => {
   const order = await Order.findById(req.params.orderId);
@@ -87,7 +86,7 @@ exports.updateOrderPaid = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Update Order Delivered
-// @route   PUT /api/v1/orders/orderId/deliver
+// @route   PUT /api/orders/orderId/deliver
 // @access  Private/admin
 exports.updateOrderDelivered = asyncHandler(async (req, res, next) => {
   const order = await Order.findById(req.params.orderId);
@@ -103,7 +102,7 @@ exports.updateOrderDelivered = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    get checkout session from stripe
-// @route   get /api/v1/orders/checkout-sesion/cartId
+// @route   get /api/orders/checkout-sesion/cartId
 // @access  Private/user
 exports.checkoutSession = asyncHandler(async (req, res, next) => {
   const taxPrice = 0;

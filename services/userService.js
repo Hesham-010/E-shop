@@ -2,7 +2,6 @@ const asyncHandler = require("express-async-handler");
 const { v4: uuidv4 } = require("uuid");
 const sharp = require("sharp");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 
 const createToken = require("../utils/createToken");
 const ApiError = require("../utils/apiError");
@@ -32,22 +31,22 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Get list of users
-// @route   GET /api/v1/users
+// @route   GET /api/users
 // @access  Public
 exports.getUsers = factory.getAll(User);
 
 // @desc    Get specific user by id
-// @route   GET /api/v1/users/:id
+// @route   GET /api/users/:id
 // @access  Public
 exports.getUser = factory.getOne(User);
 
 // @desc    Create user
-// @route   POST  /api/v1/users
+// @route   POST  /api/users
 // @access  Private
 exports.createUser = factory.createOne(User);
 
 // @desc    Update specific user
-// @route   PUT /api/v1/users/:id
+// @route   PUT /api/users/:id
 // @access  Private
 exports.updateUser = asyncHandler(async (req, res, next) => {
   const document = await Model.findByIdAndUpdate(
@@ -90,12 +89,12 @@ exports.changeUserPassword = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Delete specific user
-// @route   DELETE /api/v1/users/:id
+// @route   DELETE /api/users/:id
 // @access  Private
 exports.deleteUser = factory.deleteOne(User);
 
 // @desc    Get Logged user data
-// @route   GET /api/v1/users/getMe
+// @route   GET /api/users/getMe
 // @access  Private/Protect
 exports.getLoggedUserData = asyncHandler(async (req, res, next) => {
   req.params.id = req.user._id;
@@ -103,7 +102,7 @@ exports.getLoggedUserData = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Update Logged user Password
-// @route   put /api/v1/users/UpdateMyPassword
+// @route   put /api/users/UpdateMyPassword
 // @access  Private/Protect
 exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
   // 1- update user password based user payload (req.user._id)
@@ -123,7 +122,7 @@ exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Update Logged user Data (without password or role)
-// @route   put /api/v1/users/UpdateMyData
+// @route   put /api/users/UpdateMyData
 // @access  Private/Protect
 exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
   const updatedUser = await User.findByIdAndUpdate(
@@ -139,7 +138,7 @@ exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Delete Logged user
-// @route   Delete /api/v1/users/deleteMy
+// @route   Delete /api/users/deleteMy
 // @access  Private/Protect
 exports.deleteLoggedUser = asyncHandler(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user._id, { active: false });

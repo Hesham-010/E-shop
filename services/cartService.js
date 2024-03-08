@@ -1,4 +1,3 @@
-const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiError");
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
@@ -16,9 +15,9 @@ const calceTotalCartPrice = (cart) => {
 };
 
 // @desc    Add Product to cart
-// @route   POST /api/v1/cart
+// @route   POST /api/cart
 // @access  Private/User
-exports.addProductToCart = asyncHandler(async (req, res, next) => {
+exports.addProductToCart = async (req, res, next) => {
   const { productId, color } = req.body;
   const product = await Product.findById(productId);
   // 1- Get cart for Logged user
@@ -56,12 +55,12 @@ exports.addProductToCart = asyncHandler(async (req, res, next) => {
     status: "Successfully",
     data: cart,
   });
-});
+};
 
 // @desc    Get Products form cart
-// @route   Get /api/v1/cart
+// @route   Get /api/cart
 // @access  Private/User
-exports.getLoggedUserCart = asyncHandler(async (req, res, next) => {
+exports.getLoggedUserCart = async (req, res, next) => {
   const cart = await Cart.findOne({ user: req.user._id });
   if (!cart) {
     return next(
@@ -71,12 +70,12 @@ exports.getLoggedUserCart = asyncHandler(async (req, res, next) => {
   res
     .status(200)
     .json({ numberofProducts: cart.cartItems.length, data: cart.cartItems });
-});
+};
 
 // @desc    Delete Specific Product form cart
-// @route   DELETE   /api/v1/cart/:productId
+// @route   DELETE   /api/cart/:productId
 // @access  Private/User
-exports.removeProductFromCart = asyncHandler(async (req, res, next) => {
+exports.removeProductFromCart = async (req, res, next) => {
   const cart = await Cart.findOneAndUpdate(
     { user: req.user._id },
     {
@@ -89,20 +88,20 @@ exports.removeProductFromCart = asyncHandler(async (req, res, next) => {
   res
     .status(200)
     .json({ numberofProducts: cart.cartItems.length, data: cart.cartItems });
-});
+};
 
 // @desc    Clear Products form cart for Logged user
-// @route   DELETE   /api/v1/cart
+// @route   DELETE   /api/cart
 // @access  Private/User
-exports.clearCart = asyncHandler(async (req, res, next) => {
+exports.clearCart = async (req, res, next) => {
   await Cart.findOneAndDelete({ user: req.user._id });
   res.status(200).send();
-});
+};
 
 // @desc    Update Specific cart item quantity
-// @route   PUT   /api/v1/cart
+// @route   PUT   /api/cart
 // @access  Private/User
-exports.updateCartItemQuantity = asyncHandler(async (req, res, next) => {
+exports.updateCartItemQuantity = async (req, res, next) => {
   const quantity = req.body.quantity;
   const cart = await Cart.findOne({ user: req.user._id });
   if (!cart) {
@@ -121,12 +120,12 @@ exports.updateCartItemQuantity = asyncHandler(async (req, res, next) => {
   calceTotalCartPrice(cart);
   await cart.save();
   res.status(200).json({ status: "Successfully", data: cart });
-});
+};
 
 // @desc    Apply coupon on cart
-// @route   PUT   /api/v1/cart/applyCoupon
+// @route   PUT   /api/cart/applyCoupon
 // @access  Private/User
-exports.applyCoupon = asyncHandler(async (req, res, next) => {
+exports.applyCoupon = async (req, res, next) => {
   // get coupon based coupon name
   const coupon = await Coupon.findOne({
     name: req.body.name,
@@ -146,4 +145,4 @@ exports.applyCoupon = asyncHandler(async (req, res, next) => {
   cart.totalPriceAfterDiscount = totalPriceAfterDiscount;
   await cart.save();
   res.status(200).json({ status: "Successfully", data: cart });
-});
+};
